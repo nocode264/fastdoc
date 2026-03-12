@@ -1,0 +1,43 @@
+{
+  "name": "fastdoc",
+  "version": "1.0.0",
+  "description": "AI-powered documentation generator for your codebase",
+  "main": "dist/cli/index.js",
+  "bin": {
+    "fastdoc": "./dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/cli/index.ts",
+    "test": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nocode264/fastdoc.git"
+  },
+  "keywords": [
+    "cli",
+    "documentation",
+    "ai",
+    "typescript",
+    "php",
+    "laravel",
+    "flutter"
+  ],
+  "author": "MBEMDIA SALIOU MOHAMED",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nocode264/fastdoc/issues"
+  },
+  "homepage": "https://github.com/nocode264/fastdoc#readme",
+  "devDependencies": {
+    "@types/node": "^25.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
+    "commander": "^14.0.3"
+  }
+}
