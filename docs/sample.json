@@ -1,0 +1,118 @@
+{
+  "generatedAt": "2026-03-13T10:16:52.360Z",
+  "generatedBy": "fastdoc",
+  "file": "tests/fixtures/sample.ts",
+  "language": "typescript",
+  "description": "A TypeScript module containing user management functionality with interfaces, services, and utility functions for handling user data and discount calculations.",
+  "elements": [
+    {
+      "type": "interface",
+      "name": "User",
+      "description": "Defines the structure of a user object with essential user information",
+      "signature": "interface User",
+      "parameters": [
+        {
+          "name": "id",
+          "type": "number",
+          "description": "Unique identifier for the user"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "The full name of the user"
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "description": "The email address of the user"
+        }
+      ],
+      "returns": {
+        "type": "User",
+        "description": "User interface type definition"
+      },
+      "example": "const user: User = { id: 1, name: 'John Doe', email: 'john@example.com' };",
+      "warnings": ""
+    },
+    {
+      "type": "class",
+      "name": "UserService",
+      "description": "Service class for managing user operations including retrieval and creation of users",
+      "signature": "class UserService",
+      "parameters": [],
+      "returns": {
+        "type": "UserService",
+        "description": "Instance of UserService class"
+      },
+      "example": "const userService = new UserService();\nconst user = await userService.createUser('Alice', 'alice@example.com');\nconst foundUser = await userService.getUser(user.id);",
+      "warnings": "Users are stored in memory and will be lost when the service instance is destroyed"
+    },
+    {
+      "type": "function",
+      "name": "getUser",
+      "description": "Retrieves a user by their unique identifier",
+      "signature": "async getUser(id: number): Promise<User | undefined>",
+      "parameters": [
+        {
+          "name": "id",
+          "type": "number",
+          "description": "The unique identifier of the user to retrieve"
+        }
+      ],
+      "returns": {
+        "type": "Promise<User | undefined>",
+        "description": "Promise that resolves to the user object if found, otherwise undefined"
+      },
+      "example": "const userService = new UserService();\nconst user = await userService.getUser(123);",
+      "warnings": ""
+    },
+    {
+      "type": "function",
+      "name": "createUser",
+      "description": "Creates a new user with the provided name and email, automatically generating a unique ID",
+      "signature": "async createUser(name: string, email: string): Promise<User>",
+      "parameters": [
+        {
+          "name": "name",
+          "type": "string",
+          "description": "The full name of the user to create"
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "description": "The email address of the user to create"
+        }
+      ],
+      "returns": {
+        "type": "Promise<User>",
+        "description": "Promise that resolves to the newly created user object"
+      },
+      "example": "const userService = new UserService();\nconst newUser = await userService.createUser('Jane Smith', 'jane@example.com');",
+      "warnings": "ID is generated using Date.now() which may not guarantee uniqueness in high-frequency scenarios"
+    },
+    {
+      "type": "function",
+      "name": "calculateDiscount",
+      "description": "Calculates the discounted price based on the original price and discount rate",
+      "signature": "function calculateDiscount(price: number, rate: number): number",
+      "parameters": [
+        {
+          "name": "price",
+          "type": "number",
+          "description": "The original price before discount"
+        },
+        {
+          "name": "rate",
+          "type": "number",
+          "description": "The discount rate as a decimal between 0 and 1 (e.g., 0.1 for 10% discount)"
+        }
+      ],
+      "returns": {
+        "type": "number",
+        "description": "The final price after applying the discount"
+      },
+      "example": "const discountedPrice = calculateDiscount(100, 0.2); // Returns 80",
+      "warnings": "Throws Error if rate is not between 0 and 1 (inclusive)"
+    }
+  ]
+}
