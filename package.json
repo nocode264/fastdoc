@@ -9,7 +9,9 @@
   "scripts": {
     "build": "tsc",
     "dev": "ts-node src/cli/index.ts",
-    "test": "vitest"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "repository": {
     "type": "git",
