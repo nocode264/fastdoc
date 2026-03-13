@@ -6,6 +6,11 @@
   "bin": {
     "fastdoc": "./dist/cli/index.js"
   },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "ts-node src/cli/index.ts",
@@ -18,16 +23,24 @@
     "url": "git+https://github.com/nocode264/fastdoc.git"
   },
   "keywords": [
-    "cli",
+     "cli",
     "documentation",
     "ai",
     "typescript",
     "php",
     "laravel",
-    "flutter"
+    "flutter",
+    "dart",
+    "python",
+    "nestjs",
+    "anthropic",
+    "claude"
   ],
   "author": "MBEMDIA SALIOU MOHAMED",
-  "license": "ISC",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
   "bugs": {
     "url": "https://github.com/nocode264/fastdoc/issues"
   },
