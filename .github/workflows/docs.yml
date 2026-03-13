@@ -1,0 +1,29 @@
+name: Generate Documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+  workflow_dispatch: # permet de lancer manuellement
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate documentation with fastdoc
+        uses: nocode264/fastdoc@v1
+        with:
+          api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          output-format: all
+          output-dir: ./docs
+          language: en
+          commit-docs: true
