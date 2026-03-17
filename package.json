@@ -1,6 +1,6 @@
 {
   "name": "fastdoc-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AI-powered documentation generator for your codebase",
   "main": "dist/cli/index.js",
   "bin": {
@@ -54,6 +54,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
     "commander": "^14.0.3",
-    "dotenv": "^17.3.1"
+    "dotenv": "^17.3.1",
+    "fastdoc-cli": "^1.0.1"
   }
 }
