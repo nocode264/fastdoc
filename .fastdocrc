@@ -1,1 +1,20 @@
-{ invalid json }
+{
+  "language": "auto",
+  "output": [
+    "md",
+    "json"
+  ],
+  "outDir": "./docs",
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "*.test.ts"
+  ],
+  "ai": {
+    "model": "claude-sonnet-4-20250514",
+    "language": "en"
+  }
+}
