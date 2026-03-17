@@ -1,10 +1,10 @@
 {
-  "name": "fastdoc",
+  "name": "fastdoc-cli",
   "version": "1.0.0",
   "description": "AI-powered documentation generator for your codebase",
   "main": "dist/cli/index.js",
   "bin": {
-    "fastdoc": "./dist/cli/index.js"
+    "fastdoc": "dist/cli/index.js"
   },
   "files": [
     "dist/",
@@ -23,7 +23,7 @@
     "url": "git+https://github.com/nocode264/fastdoc.git"
   },
   "keywords": [
-     "cli",
+    "cli",
     "documentation",
     "ai",
     "typescript",

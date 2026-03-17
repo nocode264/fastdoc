@@ -29,6 +29,7 @@ export function parseFile(filePath: string, content: string): ParsedFile {
     case "js":
     case "mjs":
     case "cjs":
+    case "esm":
       language = "javascript";
       elements = parseJavaScript(content);
       break;

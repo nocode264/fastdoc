@@ -41,10 +41,10 @@ npx fastdoc generate
 
 ```bash
 # Install globally
-npm install -g fastdoc
+npm install -g fastdoc-cli
 
 # Or use without installing
-npx fastdoc generate
+npx fastdoc-cli generate
 ```
 
 ### 📋 Requirements
@@ -227,10 +227,10 @@ npx fastdoc generate
 
 ```bash
 # Installation globale
-npm install -g fastdoc
+npm install -g fastdoc-cli
 
 # Ou utilisation sans installation
-npx fastdoc generate
+npx fastdoc-cli generate
 ```
 
 ### 📋 Prérequis

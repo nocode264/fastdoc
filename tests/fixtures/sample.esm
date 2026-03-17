@@ -1,0 +1,18 @@
+// ESModule style
+export default function bootstrap(config) {
+  return config;
+}
+
+export const fetchUsers = async (page, limit) => {
+  return [];
+};
+
+export class AuthService {
+  async login(email, password) {
+    return { token: "jwt" };
+  }
+
+  async logout(token) {
+    return true;
+  }
+}
