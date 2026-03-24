@@ -49,5 +49,8 @@ export function getApiKey(): string {
     console.error("   Run: export ANTHROPIC_API_KEY=your_api_key_here");
     process.exit(1);
   }
+  const masked =
+    key.slice(0, 10) + "****...****" + key.slice(-4);
+  process.env.FASTDOC_MASKED_KEY = masked;
   return key;
 }
