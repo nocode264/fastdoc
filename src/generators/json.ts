@@ -1,5 +1,5 @@
 import { DocumentedFile } from "../ai/client";
-import { writeFile } from "../utils/file";
+import { writeFile, sanitizeFileName } from "../utils/file";
 import * as path from "path";
 
 export function generateJSON(
@@ -7,7 +7,8 @@ export function generateJSON(
   outDir: string,
   filePath: string
 ): string {
-  const fileName = path.basename(filePath, path.extname(filePath));
+  const rawName = path.basename(filePath, path.extname(filePath));
+  const fileName = sanitizeFileName(rawName);
   const outputPath = path.join(outDir, `${fileName}.json`);
 
   const output = {

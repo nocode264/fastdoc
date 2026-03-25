@@ -3,6 +3,7 @@ import { ParsedFile } from "../parser/index";
 import { buildPrompt } from "./prompts";
 import { getApiKey } from "../config/index";
 import { logger } from "../utils/logger";
+import { validateDocumentedFile } from "./validator";
 
 export interface DocumentedFile {
   file: string;
@@ -27,7 +28,11 @@ export async function generateDocumentation(
   aiLanguage: string = "en"
 ): Promise<DocumentedFile> {
   const apiKey = getApiKey();
-  const client = new Anthropic({ apiKey });
+ const client = new Anthropic({
+  apiKey,
+  timeout: 30000,
+  maxRetries: 2,
+});
 
   const prompt = buildPrompt(parsedFile, aiLanguage);
 
@@ -45,7 +50,15 @@ export async function generateDocumentation(
     .join("");
 
   try {
-    const result = JSON.parse(raw);
+    // Nettoyage des backticks markdown si présents
+    const cleaned = raw
+      .replace(/^```json\s*/i, "")
+      .replace(/^```\s*/i, "")
+      .replace(/```\s*$/i, "")
+      .trim();
+
+    const parsed = JSON.parse(cleaned);
+    const result = validateDocumentedFile(parsed);
     logger.success(`Documentation generated for ${parsedFile.filePath}`);
     return result;
   } catch {
