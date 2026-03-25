@@ -1,35 +1,35 @@
 {
-  "generatedAt": "2026-03-24T12:18:49.673Z",
+  "generatedAt": "2026-03-25T13:29:57.677Z",
   "generatedBy": "fastdoc",
   "file": "tests/fixtures/sample.ts",
   "language": "typescript",
-  "description": "A sample TypeScript module containing user management functionality and utility functions for discount calculations",
+  "description": "A TypeScript module containing user management functionality with interfaces, classes, and utility functions for handling user data and discount calculations.",
   "elements": [
     {
       "type": "interface",
       "name": "User",
-      "description": "Defines the structure of a user entity with basic identification and contact information",
-      "signature": "export interface User",
+      "description": "Defines the structure for a user entity with basic identification and contact information",
+      "signature": "interface User",
       "parameters": [],
       "returns": {
-        "type": "interface",
-        "description": "Type definition for User objects"
+        "type": "void",
+        "description": "Interface definition - no return value"
       },
-      "example": "const user: User = { id: 1, name: 'John Doe', email: 'john@example.com' };",
+      "example": "const user: User = {\n  id: 1,\n  name: \"John Doe\",\n  email: \"john@example.com\"\n};",
       "warnings": ""
     },
     {
       "type": "class",
       "name": "UserService",
-      "description": "A service class that manages user operations including retrieval and creation of user entities",
-      "signature": "export class UserService",
+      "description": "A service class that manages user data operations including retrieval and creation of users",
+      "signature": "class UserService",
       "parameters": [],
       "returns": {
         "type": "UserService",
         "description": "Instance of UserService class"
       },
-      "example": "const userService = new UserService();\nconst user = await userService.createUser('Jane Doe', 'jane@example.com');",
-      "warnings": "Uses Date.now() for ID generation which may not be suitable for production use due to potential collisions"
+      "example": "const userService = new UserService();\nconst newUser = await userService.createUser(\"Alice\", \"alice@example.com\");\nconst foundUser = await userService.getUser(newUser.id);",
+      "warnings": ""
     },
     {
       "type": "function",
@@ -45,9 +45,9 @@
       ],
       "returns": {
         "type": "Promise<User | undefined>",
-        "description": "A promise that resolves to the User object if found, otherwise undefined"
+        "description": "A promise that resolves to the user object if found, or undefined if not found"
       },
-      "example": "const userService = new UserService();\nconst user = await userService.getUser(123);",
+      "example": "const userService = new UserService();\nconst user = await userService.getUser(123);\nif (user) {\n  console.log(user.name);\n}",
       "warnings": ""
     },
     {
@@ -69,16 +69,16 @@
       ],
       "returns": {
         "type": "Promise<User>",
-        "description": "A promise that resolves to the newly created User object"
+        "description": "A promise that resolves to the newly created user object with generated ID"
       },
-      "example": "const userService = new UserService();\nconst newUser = await userService.createUser('Alice Smith', 'alice@example.com');",
-      "warnings": "Uses Date.now() for ID generation which may cause collisions if called rapidly"
+      "example": "const userService = new UserService();\nconst newUser = await userService.createUser(\"Jane Smith\", \"jane@example.com\");\nconsole.log(`Created user with ID: ${newUser.id}`);",
+      "warnings": "Uses Date.now() for ID generation which may cause collisions in high-frequency scenarios"
     },
     {
       "type": "function",
       "name": "calculateDiscount",
       "description": "Calculates the discounted price by applying a discount rate to the original price",
-      "signature": "export function calculateDiscount(price: number, rate: number): number",
+      "signature": "function calculateDiscount(price: number, rate: number): number",
       "parameters": [
         {
           "name": "price",
@@ -95,7 +95,7 @@
         "type": "number",
         "description": "The final price after applying the discount"
       },
-      "example": "const discountedPrice = calculateDiscount(100, 0.2); // Returns 80",
+      "example": "const originalPrice = 100;\nconst discountRate = 0.15; // 15% discount\nconst finalPrice = calculateDiscount(originalPrice, discountRate);\nconsole.log(finalPrice); // 85",
       "warnings": "Throws Error if rate is not between 0 and 1"
     }
   ]

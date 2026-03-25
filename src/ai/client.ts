@@ -3,6 +3,7 @@ import { ParsedFile } from "../parser/index";
 import { buildPrompt } from "./prompts";
 import { getApiKey } from "../config/index";
 import { logger } from "../utils/logger";
+import { validateDocumentedFile } from "./validator";
 
 export interface DocumentedFile {
   file: string;
@@ -56,7 +57,8 @@ export async function generateDocumentation(
       .replace(/```\s*$/i, "")
       .trim();
 
-    const result = JSON.parse(cleaned);
+    const parsed = JSON.parse(cleaned);
+    const result = validateDocumentedFile(parsed);
     logger.success(`Documentation generated for ${parsedFile.filePath}`);
     return result;
   } catch {

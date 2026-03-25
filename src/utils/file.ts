@@ -36,3 +36,10 @@ export function getFileExtension(filePath: string): string {
 export function fileExists(filePath: string): boolean {
   return fs.existsSync(filePath);
 }
+
+export function sanitizeFileName(fileName: string): string {
+  return fileName
+    .replace(/[^a-zA-Z0-9._-]/g, "_") 
+    .replace(/_{2,}/g, "_")
+    .replace(/^_+|_+$/g, "");
+}

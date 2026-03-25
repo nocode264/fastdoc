@@ -8,6 +8,8 @@ import { readFile, fileExists } from "../utils/file";
 import { logger } from "../utils/logger";
 import * as path from "path";
 import * as fs from "fs";
+import { withRateLimit } from "../utils/ratelimit";
+
 
 export const generateCommand = new Command("generate")
   .description("Analyze source code and generate documentation")
@@ -44,7 +46,6 @@ export const generateCommand = new Command("generate")
       }
 
       try {
-        // 1. Parser le fichier
         const content = readFile(filePath);
         const parsed = parseFile(filePath, content);
 
@@ -58,10 +59,12 @@ export const generateCommand = new Command("generate")
           continue;
         }
 
-        // 2. Générer la documentation via Claude
-        const documented = await generateDocumentation(parsed, aiLanguage);
+        // Rate limit : 500ms entre chaque requête API
+        const documented = await withRateLimit(
+          () => generateDocumentation(parsed, aiLanguage),
+          500
+        );
 
-        // 3. Écrire les fichiers de sortie
         if (outputFormat === "md" || outputFormat === "all") {
           const mdPath = generateMarkdown(documented, outDir, filePath);
           logger.success(`Markdown → ${mdPath}`);
@@ -74,11 +77,20 @@ export const generateCommand = new Command("generate")
 
         successCount++;
       } catch (error) {
-        logger.error(`Failed to document ${filePath}: ${(error as Error).message}`);
+        logger.error(
+          `Failed to document ${filePath}: ${(error as Error).message}`
+        );
       }
     }
 
     logger.step(`Done! ${successCount}/${files.length} file(s) documented → ${outDir}`);
+
+    // En CI/CD, on sort avec un code non-zéro si des fichiers ont échoué
+    if (successCount < files.length) {
+      const failed = files.length - successCount;
+      logger.warn(`${failed} file(s) failed to document.`);
+      process.exit(1);
+    }
   });
 
 function getProjectFiles(include: string[], exclude: string[]): string[] {
