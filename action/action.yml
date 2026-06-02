@@ -25,7 +25,7 @@ inputs:
   commit-docs:
     description: "Automatically commit generated docs"
     required: false
-    default: "true"
+    default: "false"
   source-dir:
     description: "Source directory to analyze"
     required: false
@@ -70,6 +70,11 @@ runs:
       if: ${{ inputs.commit-docs == 'true' }}
       shell: bash
       run: |
+        OUT_DIR="${{ inputs.output-dir }}"
+        if [[ "$OUT_DIR" == "." || "$OUT_DIR" == "./" || "$OUT_DIR" == /* || "$OUT_DIR" == *".."* ]]; then
+          echo "❌ Refusing to commit unsafe output-dir: $OUT_DIR"
+          exit 1
+        fi
         git config --local user.email "fastdoc[bot]@users.noreply.github.com"
         git config --local user.name "fastdoc[bot]"
         git add ${{ inputs.output-dir }}

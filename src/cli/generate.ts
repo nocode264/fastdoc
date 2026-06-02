@@ -27,7 +27,7 @@ export const generateCommand = new Command("generate")
 
     // Récupère les fichiers à analyser
     const files = options.file
-      ? [options.file]
+      ? [validateAndResolveInputFile(options.file)]
       : getProjectFiles(config.include, config.exclude);
 
     if (files.length === 0) {
@@ -123,4 +123,22 @@ function getProjectFiles(include: string[], exclude: string[]): string[] {
   walk("src");
 
   return files;
+}
+
+function validateAndResolveInputFile(filePath: string): string {
+  const resolved = path.resolve(filePath);
+  const base = path.resolve(process.cwd());
+  const rel = path.relative(base, resolved);
+  const isOutside = rel.startsWith("..") || path.isAbsolute(rel);
+  if (isOutside) {
+    throw new Error(
+      `❌ Security: input file "${filePath}" is outside the project directory.`
+    );
+  }
+
+  logger.warn(
+    `Privacy notice: "${rel}" will be sent to an external AI service (Anthropic) for documentation generation.`
+  );
+
+  return resolved;
 }
