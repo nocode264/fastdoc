@@ -43,10 +43,13 @@ export const generateCommand = new Command("generate")
     logger.info(`Found ${files.length} file(s) to document.`);
 
     let successCount = 0;
+    let skippedCount = 0;
+    let failedCount = 0;
 
     for (const filePath of files) {
       if (!fileExists(filePath)) {
         logger.warn(`File not found: ${filePath}`);
+        failedCount++;
         continue;
       }
 
@@ -72,11 +75,13 @@ export const generateCommand = new Command("generate")
 
         if (parsed.language === "unknown") {
           logger.warn(`Unsupported file: ${filePath} — skipping.`);
+          skippedCount++;
           continue;
         }
 
         if (parsed.elements.length === 0) {
           logger.warn(`No elements found in: ${filePath} — skipping.`);
+          skippedCount++;
           continue;
         }
 
@@ -98,18 +103,20 @@ export const generateCommand = new Command("generate")
 
         successCount++;
       } catch (error) {
+        failedCount++;
         logger.error(
           `Failed to document ${filePath}: ${(error as Error).message}`
         );
       }
     }
 
-    logger.step(`Done! ${successCount}/${files.length} file(s) documented → ${outDir}`);
+    logger.step(
+      `Done! ${successCount} documented, ${skippedCount} skipped, ${failedCount} failed → ${outDir}`
+    );
 
     // En CI/CD, on sort avec un code non-zéro si des fichiers ont échoué
-    if (successCount < files.length) {
-      const failed = files.length - successCount;
-      logger.warn(`${failed} file(s) failed to document.`);
+    if (failedCount > 0) {
+      logger.warn(`${failedCount} file(s) failed to document.`);
       process.exit(1);
     }
   });

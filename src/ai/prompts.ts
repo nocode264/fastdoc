@@ -30,7 +30,7 @@ export function buildPrompt(parsedFile: ParsedFile, language: string): string {
 
   return `You are a technical documentation expert. Analyze the following ${parsedFile.language} code and generate professional documentation in ${lang}.
 
-For each element (function, class, interface, route), provide:
+For each element (function, class, interface, route, variable), provide:
 - A clear description of its purpose
 - Parameters with their types and descriptions
 - Return value with type and description

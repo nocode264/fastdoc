@@ -46,6 +46,7 @@ function renderElement(el: DocumentedElement): string[] {
     interface: "📐",
     method: "⚙️",
     route: "🌐",
+    variable: "🏷️",
   }[el.type] ?? "📄";
 
   lines.push(`## ${emoji} \`${el.name}\``);
