@@ -5,6 +5,7 @@ const MAX_ELEMENTS = 20;      // max éléments par fichier
 
 export function buildPrompt(parsedFile: ParsedFile, language: string): string {
   const lang = language === "fr" ? "French" : "English";
+  const fileId = parsedFile.filePath.replace(/\\/g, "/").split("/").pop() ?? parsedFile.filePath;
 
   // Limite le nombre d'éléments
   const elements = parsedFile.elements.slice(0, MAX_ELEMENTS);
@@ -59,7 +60,7 @@ Respond ONLY in valid JSON with this exact structure:
 
 Do not include any text outside the JSON. No markdown backticks. No preamble.
 
-FILE: ${parsedFile.filePath}
+FILE: ${fileId}
 LANGUAGE: ${parsedFile.language}
 
 ${elementsText}`;

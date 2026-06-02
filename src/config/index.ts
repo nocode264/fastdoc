@@ -8,6 +8,7 @@ export interface FastdocConfig {
   include: string[];
   exclude: string[];
   ai: {
+    provider?: "anthropic" | "openai" | "gemini";
     model: string;
     language: string;
   };
@@ -20,6 +21,7 @@ const DEFAULT_CONFIG: FastdocConfig = {
   include: ["src/**/*"],
   exclude: ["node_modules", "dist", "*.test.ts"],
   ai: {
+    provider: "anthropic",
     model: "claude-sonnet-4-20250514",
     language: "en",
   },
@@ -52,5 +54,21 @@ export function getApiKey(): string {
   const masked =
     key.slice(0, 10) + "****...****" + key.slice(-4);
   process.env.FASTDOC_MASKED_KEY = masked;
+  return key;
+}
+
+export function getApiKeyForProvider(provider: "anthropic" | "openai" | "gemini"): string {
+  const envVar =
+    provider === "anthropic"
+      ? "ANTHROPIC_API_KEY"
+      : provider === "openai"
+        ? "OPENAI_API_KEY"
+        : "GEMINI_API_KEY";
+
+  const key = process.env[envVar];
+  if (!key) {
+    console.error(`❌ ${envVar} is not set.`);
+    process.exit(1);
+  }
   return key;
 }

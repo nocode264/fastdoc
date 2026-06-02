@@ -1,9 +1,10 @@
-import Anthropic from "@anthropic-ai/sdk";
 import { ParsedFile } from "../parser/index";
 import { buildPrompt } from "./prompts";
-import { getApiKey } from "../config/index";
 import { logger } from "../utils/logger";
 import { validateDocumentedFile } from "./validator";
+import { loadConfig, getApiKeyForProvider } from "../config/index";
+import { getProvider } from "./providers/factory";
+import { extractFirstJsonObject, stripCodeFences } from "./json";
 
 export interface DocumentedFile {
   file: string;
@@ -27,43 +28,28 @@ export async function generateDocumentation(
   parsedFile: ParsedFile,
   aiLanguage: string = "en"
 ): Promise<DocumentedFile> {
-  const apiKey = getApiKey();
- const client = new Anthropic({
-  apiKey,
-  timeout: 30000,
-  maxRetries: 2,
-});
+  const config = loadConfig();
+  const providerName = config.ai.provider ?? "anthropic";
+  const model = config.ai.model ?? "claude-sonnet-4-20250514";
+  const apiKey = getApiKeyForProvider(providerName);
 
+  const provider = getProvider(providerName);
   const prompt = buildPrompt(parsedFile, aiLanguage);
 
-  logger.step(`Sending ${parsedFile.filePath} to Claude...`);
+  logger.step(`Sending ${parsedFile.filePath} to ${providerName}...`);
 
-  const response = await client.messages.create({
-    model: "claude-sonnet-4-20250514",
-    max_tokens: 4096,
-    messages: [{ role: "user", content: prompt }],
-  });
-
-  const raw = response.content
-    .filter((block) => block.type === "text")
-    .map((block) => (block as { type: "text"; text: string }).text)
-    .join("");
+  const raw = await provider.generateText({ apiKey, model, prompt });
 
   try {
-    // Nettoyage des backticks markdown si présents
-    const cleaned = raw
-      .replace(/^```json\s*/i, "")
-      .replace(/^```\s*/i, "")
-      .replace(/```\s*$/i, "")
-      .trim();
-
-    const parsed = JSON.parse(cleaned);
+    const cleaned = stripCodeFences(raw);
+    const jsonText = extractFirstJsonObject(cleaned);
+    const parsed = JSON.parse(jsonText);
     const result = validateDocumentedFile(parsed);
     logger.success(`Documentation generated for ${parsedFile.filePath}`);
     return result;
   } catch {
-    logger.error("Failed to parse Claude response as JSON.");
-    logger.error("Raw response: " + raw.slice(0, 200));
-    throw new Error("Invalid JSON response from Claude API");
+    logger.error("Failed to parse AI response as JSON.");
+    logger.error(`Response length: ${raw.length} chars`);
+    throw new Error("Invalid JSON response from AI provider");
   }
 }

@@ -8,8 +8,16 @@ branding:
 
 inputs:
   api-key:
-    description: "Anthropic API key"
+    description: "API key for selected provider"
     required: true
+  provider:
+    description: "AI provider: anthropic, openai, gemini"
+    required: false
+    default: "anthropic"
+  model:
+    description: "Model name (provider-specific)"
+    required: false
+    default: "claude-sonnet-4-20250514"
   output-format:
     description: "Output format: md, json, all"
     required: false
@@ -54,7 +62,8 @@ runs:
           "include": ["${{ inputs.source-dir }}/**/*"],
           "exclude": ["node_modules", "dist", "*.test.ts"],
           "ai": {
-            "model": "claude-sonnet-4-20250514",
+            "provider": "${{ inputs.provider }}",
+            "model": "${{ inputs.model }}",
             "language": "${{ inputs.language }}"
           }
         }
@@ -63,7 +72,9 @@ runs:
     - name: Generate documentation
       shell: bash
       env:
-        ANTHROPIC_API_KEY: ${{ inputs.api-key }}
+        ANTHROPIC_API_KEY: ${{ inputs.provider == 'anthropic' && inputs.api-key || '' }}
+        OPENAI_API_KEY: ${{ inputs.provider == 'openai' && inputs.api-key || '' }}
+        GEMINI_API_KEY: ${{ inputs.provider == 'gemini' && inputs.api-key || '' }}
       run: fastdoc generate --output ${{ inputs.output-format }} --out-dir ${{ inputs.output-dir }}
 
     - name: Commit documentation

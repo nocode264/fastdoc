@@ -9,6 +9,7 @@ import { logger } from "../utils/logger";
 import * as path from "path";
 import * as fs from "fs";
 import { withRateLimit } from "../utils/ratelimit";
+import { detectSecrets, maskSecrets } from "../security/secrets";
 
 
 export const generateCommand = new Command("generate")
@@ -17,11 +18,15 @@ export const generateCommand = new Command("generate")
   .option("-l, --lang <lang>", "Force language detection (js, ts, php, dart, py)")
   .option("-o, --output <format>", "Output format: md, json, all", "md")
   .option("-d, --out-dir <path>", "Output directory", "./docs")
+  .option("--max-bytes <n>", "Max file size to send to AI (bytes)", "200000")
+  .option("--secret-policy <policy>", "Secret policy: fail or mask", "fail")
   .action(async (options) => {
     const config = loadConfig();
     const outDir = options.outDir ?? config.outDir;
     const outputFormat = options.output ?? config.output[0];
     const aiLanguage = config.ai.language;
+    const maxBytes = Number(options.maxBytes ?? 200000);
+    const secretPolicy = String(options.secretPolicy ?? "fail").toLowerCase();
 
     logger.step("fastdoc — starting documentation generation...");
 
@@ -46,7 +51,23 @@ export const generateCommand = new Command("generate")
       }
 
       try {
-        const content = readFile(filePath);
+        const stat = fs.statSync(filePath);
+        if (Number.isFinite(maxBytes) && stat.size > maxBytes) {
+          throw new Error(`File too large (${stat.size} bytes). Max is ${maxBytes}.`);
+        }
+
+        let content = readFile(filePath);
+        const secrets = detectSecrets(content);
+        if (secrets.length > 0) {
+          const summary = secrets.map((s) => s.kind).join(", ");
+          if (secretPolicy === "mask") {
+            logger.warn(`Secrets detected in ${filePath} (${summary}) — masking before sending to AI.`);
+            content = maskSecrets(content);
+          } else {
+            throw new Error(`Secrets detected in ${filePath} (${summary}). Refusing to send to AI.`);
+          }
+        }
+
         const parsed = parseFile(filePath, content);
 
         if (parsed.language === "unknown") {
