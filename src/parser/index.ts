@@ -5,7 +5,7 @@ import { parseDart } from "./dart";
 import { parsePython } from "./python";
 
 export interface ParsedElement {
-  type: "function" | "class" | "method" | "route" | "interface";
+  type: "function" | "class" | "method" | "route" | "interface" | "variable";
   name: string;
   signature: string;
   body: string;

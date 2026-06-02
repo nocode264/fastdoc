@@ -8,8 +8,16 @@ branding:
 
 inputs:
   api-key:
-    description: "Anthropic API key"
+    description: "API key for selected provider"
     required: true
+  provider:
+    description: "AI provider: anthropic, openai, gemini"
+    required: false
+    default: "anthropic"
+  model:
+    description: "Model name (provider-specific)"
+    required: false
+    default: "claude-sonnet-4-20250514"
   output-format:
     description: "Output format: md, json, all"
     required: false
@@ -25,7 +33,7 @@ inputs:
   commit-docs:
     description: "Automatically commit generated docs"
     required: false
-    default: "true"
+    default: "false"
   source-dir:
     description: "Source directory to analyze"
     required: false
@@ -54,7 +62,8 @@ runs:
           "include": ["${{ inputs.source-dir }}/**/*"],
           "exclude": ["node_modules", "dist", "*.test.ts"],
           "ai": {
-            "model": "claude-sonnet-4-20250514",
+            "provider": "${{ inputs.provider }}",
+            "model": "${{ inputs.model }}",
             "language": "${{ inputs.language }}"
           }
         }
@@ -63,13 +72,20 @@ runs:
     - name: Generate documentation
       shell: bash
       env:
-        ANTHROPIC_API_KEY: ${{ inputs.api-key }}
+        ANTHROPIC_API_KEY: ${{ inputs.provider == 'anthropic' && inputs.api-key || '' }}
+        OPENAI_API_KEY: ${{ inputs.provider == 'openai' && inputs.api-key || '' }}
+        GEMINI_API_KEY: ${{ inputs.provider == 'gemini' && inputs.api-key || '' }}
       run: fastdoc generate --output ${{ inputs.output-format }} --out-dir ${{ inputs.output-dir }}
 
     - name: Commit documentation
       if: ${{ inputs.commit-docs == 'true' }}
       shell: bash
       run: |
+        OUT_DIR="${{ inputs.output-dir }}"
+        if [[ "$OUT_DIR" == "." || "$OUT_DIR" == "./" || "$OUT_DIR" == /* || "$OUT_DIR" == *".."* ]]; then
+          echo "❌ Refusing to commit unsafe output-dir: $OUT_DIR"
+          exit 1
+        fi
         git config --local user.email "fastdoc[bot]@users.noreply.github.com"
         git config --local user.name "fastdoc[bot]"
         git add ${{ inputs.output-dir }}

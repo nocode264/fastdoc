@@ -8,6 +8,7 @@ const ESM_CLASS       = /^(?:export\s+)?(?:default\s+)?(?:abstract\s+)?class\s+(
 const ESM_INTERFACE   = /^(?:export\s+)?interface\s+(\w+)/;
 const ESM_TYPE        = /^(?:export\s+)?type\s+(\w+)\s*=/;
 const ESM_DEFAULT_FN  = /^export\s+default\s+(?:async\s+)?function\s*\(([^)]*)\)/;
+const ESM_CONST       = /^(?:export\s+)?(?:const|let|var)\s+(\w+)\s*=\s*([^;]+);?$/;
 
 // ─── CommonJS patterns ───────────────────────────────────────────────────────
 const CJS_EXPORTS_FN      = /^(?:module\.)?exports\.(\w+)\s*=\s*(?:async\s+)?function\s*\(([^)]*)\)/;
@@ -93,6 +94,20 @@ export function parseJavaScript(content: string): ParsedElement[] {
         type: "function",
         name: esmArrowShort[1],
         signature: `${esmArrowShort[1]}(${esmArrowShort[2]})`,
+        body: trimmed,
+        line: index + 1,
+      });
+      currentDecorator = "";
+      return;
+    }
+
+    // ── ESModule : constantes / variables exportées ──────────────────────────
+    const esmConst = trimmed.match(ESM_CONST);
+    if (esmConst) {
+      elements.push({
+        type: "variable",
+        name: esmConst[1],
+        signature: `${esmConst[1]} = ${esmConst[2]}`,
         body: trimmed,
         line: index + 1,
       });
